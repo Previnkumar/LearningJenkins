@@ -1,0 +1,10 @@
+// PERSONAL_ACCESS_TOKEN - Credential secret variable set to jenkins
+
+node {
+    
+    withCredentials([string(credentialsId: 'GITHUB_KEY', variable: 'PERSONAL_ACCESS_TOKEN')]) {
+        git url: 'https://'+ PERSONAL_ACCESS_TOKEN + '@github.com/Previnkumar/LearningJenkins.git', 
+        branch: 'main'
+    }
+}
+
