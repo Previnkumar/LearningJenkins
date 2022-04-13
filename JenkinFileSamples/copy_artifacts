@@ -1,0 +1,41 @@
+pipeline {
+    agent any
+
+    stages {
+        
+        stage('get-code') {
+            
+            steps {
+                
+                withCredentials([string(credentialsId: 'GITHUB_KEY', variable: 'PERSONAL_ACCESS_TOKEN')]) {
+                    git branch: 'main', 
+                        changelog: false, 
+                        poll: false, 
+                        url: 'https://' + PERSONAL_ACCESS_TOKEN + '@github.com/Previnkumar/LearningJenkins.git'
+                        
+                }
+                echo "first stage completed"
+                
+            }
+        }
+        
+        stage('create-zip') {
+            
+            steps {
+                bat 'tar.exe -a -c -f JenkinFileSamples.zip JenkinFileSamples'
+                echo "second stage completed"
+            }
+            
+        }
+        
+        stage('copy-artifcats') {
+            
+            steps {
+                // copy artificat to archive/ folder in  build directory
+                archiveArtifacts artifacts: 'JenkinFileSamples.zip', followSymlinks: false
+                echo "artifcat stage completed"
+            }
+            
+        }
+    }
+}
