@@ -1,0 +1,43 @@
+pipeline {
+    agent any
+    
+    // pipeline level environment vairables
+    environment { 
+        MY_PIPELINE_NAME = "My Pipeline"
+        MY_PIPELINE_NUMBER = "001"
+    }
+    
+    stages {
+        
+        stage('one') {
+            
+            //stage level environment variables
+            environment {
+                MY_STAGE_NAME = "MY_STAGE"
+                MY_STAGE_NUMBER = "002"
+            }
+            
+            steps {
+                
+                echo env.MY_PIPELINE_NAME
+                echo env.MY_PIPELINE_NUMBER
+                
+                echo env.MY_STAGE_NAME
+                echo env.MY_STAGE_NUMBER
+                
+                // predefined env variables by jenkins
+                // List can be obtained from pipeline syntax - global variables reference
+                echo env.BUILD_ID
+                echo env.JOB_NAME
+                echo env.NODE_NAME
+                
+            }
+        }
+        stage('two') {
+           steps {
+               // Accessing env.STAGE_NAME will return null here
+               echo env.MY_STAGE_NAME
+           }
+        }
+    }
+}
