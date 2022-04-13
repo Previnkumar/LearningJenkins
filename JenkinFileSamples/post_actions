@@ -1,0 +1,63 @@
+//params.BuildStatus should be set to run this
+
+pipeline {
+    agent any
+    
+    stages {
+        stage('one') {
+            steps{
+                script {
+                    
+                    // Calling error() or unstable() / setting currentBuilt result - both will work for setting the status
+                    
+                    if (params.BuildStatus == "success") {
+                        
+                        echo "Build status is success"
+                        
+                    } else if (params.BuildStatus == "failure") {
+                        
+                        error("Build status is failure")
+                        //currentBuild.result = 'FAILURE'
+                        
+                    } else {
+                        
+                        // unstable("Build status is unstable")
+                        currentBuild.result = 'UNSTABLE'
+                    }
+                }
+                
+            }
+        }
+    }
+    
+    post {
+        always {
+            echo "always - This will always run"
+        }
+        success {
+            echo "success - This will only run if successfull"
+        }
+        failure {
+            echo "failure - This will only run if failed"
+        }
+        changed {
+            echo " changed - This will only run if the current pipeline state has changed from previous one"
+        }
+        fixed {
+            echo "fixed - This will only run if current pipeline status is successful and previous one is failed"
+        }
+        regression {
+            echo "regression - This will only run if current pipeline status is failure/unstable/aborted and previous one is successful"
+        }
+        unsuccessful {
+            echo "unsuccessful - This will only run if current pipeline status is not success"
+        }
+        unstable {
+            echo "unstable - This will only run if current pipeline status is unstable, usually caused by test failures, code violations, etc"
+        }
+        cleanup {
+            echo "cleanup - This will run after every other post condition has been evaluated, regardless of the Pipeline or stage’s status"
+        }
+    }
+    
+}
