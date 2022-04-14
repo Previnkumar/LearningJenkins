@@ -1,0 +1,64 @@
+pipeline {
+    agent any
+    
+    stages {
+        stage('one') {
+            steps {
+                echo "Dummy stage"
+            }
+        }
+    }
+
+    post { 
+        cleanup {
+            script {
+                def n_success_builds_to_retain = 5
+                def n_unsuccessful_builds_to_retain = 3
+                
+                def job = Jenkins.instance.getItemByFullName(env.JOB_NAME)
+                def builds = job.getBuilds()
+
+                println("Cleaning up unwanted builds")
+                
+                retained_successful_build_count = 0
+                retained_unsuccessful_build_count = 0
+                builds_to_delete = []
+                
+
+                // There is an issue occuring when deleting build directly inside the for-in loop (even with normal for loop)
+                // it looks like it is updating the contents of 'builds' and loop behaviour is not as expected
+                // So, build needed to be removed are captured in a separate list and deleted
+                
+                for (build in builds) {
+                    
+                    if (build.getResult().toString().toLowerCase() == "success" && retained_successful_build_count < n_success_builds_to_retain ) {
+                        
+                        retained_successful_build_count = retained_successful_build_count + 1
+                        
+                    } else if (build.getResult().toString().toLowerCase() != "success" && retained_unsuccessful_build_count < n_unsuccessful_builds_to_retain ) {
+                        
+                        retained_unsuccessful_build_count = retained_unsuccessful_build_count + 1
+                        
+                    } else {
+                        
+                        builds_to_delete.add(build)
+                        
+                    }
+                }
+                
+                for (build in builds_to_delete) {
+                
+                    println("Deleting Build with id '" + build.getId() + "' having status '" + build.getResult() + "'")
+                    build.delete()
+                    println("Deleted directory - "+ build.getRootDir())
+                
+                }
+                
+                println("Cleanup complete")
+            }
+            
+
+        }
+    }
+
+}
