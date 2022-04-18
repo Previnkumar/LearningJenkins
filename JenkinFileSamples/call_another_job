@@ -1,0 +1,14 @@
+pipeline {
+    agent any
+    
+    stages {
+        
+        stage("Call Another Job") {
+            steps {
+                build job: 'SampleFreestyleProject', parameters: [string(name: 'Year', value: '2022')]
+                echo "Job executed successfully"
+            }
+    }
+        
+    }
+}
