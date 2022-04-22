@@ -1,2 +1,2 @@
-# Sample Jenkins File to test GIT SCM Branch option
+// Sample Jenkins File to test GIT SCM Branch option
 echo "Works Fine"
